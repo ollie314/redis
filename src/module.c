@@ -3000,7 +3000,7 @@ void RM_EmitAOF(RedisModuleIO *io, const char *cmdname, const char *fmt, ...) {
 RedisModuleCtx *RM_GetContextFromIO(RedisModuleIO *io) {
     if (io->ctx) return io->ctx; /* Can't have more than one... */
     RedisModuleCtx ctxtemplate = REDISMODULE_CTX_INIT;
-    io->ctx = zmalloc(sizeof(*io));
+    io->ctx = zmalloc(sizeof(RedisModuleCtx));
     *(io->ctx) = ctxtemplate;
     io->ctx->module = io->type->module;
     io->ctx->client = NULL;
@@ -3183,7 +3183,7 @@ void moduleHandleBlockedClients(void) {
         if (bc->privdata && bc->free_privdata)
             bc->free_privdata(bc->privdata);
         zfree(bc);
-        if (c != NULL) unblockClient(bc->client);
+        if (c != NULL) unblockClient(c);
 
         /* Lock again before to iterate the loop. */
         pthread_mutex_lock(&moduleUnblockedClientsMutex);
